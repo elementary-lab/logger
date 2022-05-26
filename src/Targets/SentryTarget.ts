@@ -6,8 +6,7 @@ import { Stacktrace } from '@sentry/node';
 import { TargetConfigInterface } from '../Interface/LoggerConfigInterface';
 import { Primitive } from '@sentry/types/dist/misc';
 import { Transport, TransportClass } from '@sentry/types/types/transport';
-import { HTTPSTransport } from '@sentry/node/esm/transports/https';
-
+import { HTTPSTransport } from '@sentry/node/dist/transports/https';
 
 export class SentryTarget extends AbstractTarget implements SentryTargetConfig {
     public dsn: string;
@@ -37,7 +36,7 @@ export class SentryTarget extends AbstractTarget implements SentryTargetConfig {
                 eventId = Sentry.captureEvent({
                     message: item.message,
                     stacktrace: this.convertTrace(item.trace),
-                    tags: item.data,
+                    tags: item.data
                 });
             }
             console.log('Add new event to Sentry pool: ' + eventId);
@@ -49,7 +48,7 @@ export class SentryTarget extends AbstractTarget implements SentryTargetConfig {
     private convertTrace(trace: StackFrame[]): Stacktrace {
         const newTrace: Stacktrace = {
             frames: [],
-            frames_omitted: [1, 2],
+            frames_omitted: [1, 2]
         };
         trace.forEach((item: StackFrame) => {
             newTrace.frames.push({
@@ -57,7 +56,7 @@ export class SentryTarget extends AbstractTarget implements SentryTargetConfig {
                 abs_path: item.file ?? 'null',
                 lineno: item.lineNumber ?? 0,
                 colno: item.column ?? 0,
-                vars: item.arguments,
+                vars: item.arguments
             });
         });
         return newTrace;
@@ -73,4 +72,3 @@ interface SentryTargetConfig extends TargetConfigInterface {
         [key: string]: Primitive;
     };
 }
-

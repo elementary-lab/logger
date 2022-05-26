@@ -57,7 +57,7 @@ export class Dispatcher implements LoggerConfigInterface {
             const trace = stackTraceParser.parse(new Error().stack ?? []);
             trace.pop();
             // eslint-disable-next-line array-callback-return
-            trace.map((item: StackFrame) => {
+            trace.forEach((item: StackFrame) => {
                 if (count++ >= this.traceLevel) {
                     // eslint-disable-next-line array-callback-return
                     return;
@@ -89,6 +89,7 @@ export class Dispatcher implements LoggerConfigInterface {
         const targets = this.targets.map((target: AbstractTarget) => {
             if (target.enabled) {
                 return target.collect(messages, final);
+                // TODO add try catch
                 // try {
                 //
                 // } catch (exception) {

@@ -28,6 +28,7 @@ export class ConsoleTarget extends AbstractTarget implements ConsoleTargetConfig
             }
             switch (item.level) {
             case LogLevel.EMERGENCY:
+            case LogLevel.ERROR:
                 this.consoleClass.error(string);
                 break;
             case LogLevel.DEBUG:
@@ -40,7 +41,7 @@ export class ConsoleTarget extends AbstractTarget implements ConsoleTargetConfig
                 this.consoleClass.warn(string);
                 break;
             default:
-                this.consoleClass.trace(string);
+                this.consoleClass.log(string);
             }
         });
     }

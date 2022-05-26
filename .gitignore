@@ -1,0 +1,12 @@
+.idea
+.env.*
+node_modules
+
+package-lock.json
+build/
+
+# logs
+yarn-error.log
+npm-debug.log
+lerna-debug.log
+local.log

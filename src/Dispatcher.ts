@@ -6,6 +6,8 @@ import * as stackTraceParser from 'stacktrace-parser';
 import { LoggerConfigInterface, TargetConfigInterface } from './Interface/LoggerConfigInterface';
 
 export class Dispatcher implements LoggerConfigInterface {
+    public flushBySignals: Signals[] = [];
+
     public flushByCountInterval = 1000;
 
     public flushByTimeInterval = 0;
@@ -31,11 +33,10 @@ export class Dispatcher implements LoggerConfigInterface {
     }
 
     public init(): void {
-        process.on('exit', async() => {
-            if (this.flushByTimeIntervalTimer !== null) {
-                clearInterval(this.flushByTimeIntervalTimer);
-            }
-            await this.flush(this.messages, true);
+        this.flushBySignals.forEach((signal) => {
+            (async() => {
+                await this.flush(this.messages, true);
+            })();
         });
         if (this.flushByTimeInterval > 0) {
             this.flushByTimeIntervalTimer = setInterval(async() => {

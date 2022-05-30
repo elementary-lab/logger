@@ -1,6 +1,6 @@
 {
   "name": "@elementary-lab/logger",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "scripts": {
     "build": "run-p build:cjs build:types",
     "build:cjs": "tsc -p tsconfig.cjs.json",

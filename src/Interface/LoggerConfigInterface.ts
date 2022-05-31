@@ -2,7 +2,8 @@ import { MessageEntity } from '../Entities/MessageEntity';
 import { LogLevel } from '../Types';
 
 export interface LoggerConfigInterface {
-    flushBySignals: Signals[]
+    // eslint-disable-next-line no-undef
+    flushBySignals: NodeJS.Signals[]
     flushByCountInterval?: number;
     flushByTimeInterval?: number;
     traceLevel: number;

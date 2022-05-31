@@ -6,7 +6,8 @@ import * as stackTraceParser from 'stacktrace-parser';
 import { LoggerConfigInterface, TargetConfigInterface } from './Interface/LoggerConfigInterface';
 
 export class Dispatcher implements LoggerConfigInterface {
-    public flushBySignals: Signals[] = [];
+    // eslint-disable-next-line no-undef
+    public flushBySignals: NodeJS.Signals[] = [];
 
     public flushByCountInterval = 1000;
 

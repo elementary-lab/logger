@@ -34,4 +34,3 @@ export class Logger implements LoggerInterface {
         this.dispatcher.log(message, LogLevel.WARNING, context, category);
     }
 }
-

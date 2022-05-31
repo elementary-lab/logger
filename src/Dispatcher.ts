@@ -35,19 +35,28 @@ export class Dispatcher implements LoggerConfigInterface {
 
     public init(): void {
         this.flushBySignals.forEach((signal) => {
-            (async() => {
-                await this.flush(this.messages, true);
-            })();
-        });
-        if (this.flushByTimeInterval > 0) {
-            this.flushByTimeIntervalTimer = setInterval(async() => {
-                if (this.messages.length !== 0) {
+            process.on(signal, () => {
+                (async() => {
                     const msgToFlush = this.messages;
                     this.messages = [];
-                    return await this.flush(msgToFlush);
-                }
+                    await this.flush(msgToFlush, true);
+                })();
+            });
+        });
+        if (this.flushByTimeInterval > 0) {
+            this.flushByTimeIntervalTimer = setInterval(() => {
+                (async() => {
+                    if (this.messages.length !== 0) {
+                        const msgToFlush = this.messages;
+                        this.messages = [];
+                        return await this.flush(msgToFlush);
+                    }
+                })();
             }, this.flushByTimeInterval);
         }
+        process.on('exit', () => {
+            clearInterval(this.flushByTimeIntervalTimer);
+        });
     }
 
     public log(message: string, level: LogLevel, data?: any, category = 'application', tags?: MessageTag[]): void {

@@ -40,8 +40,9 @@ export class Dispatcher implements LoggerConfigInterface {
                 const msgToFlush = this.messages;
                 this.messages = [];
                 await this.flush(msgToFlush, true);
-            }).bind(this);
-        };
+                clearInterval(this.flushByTimeIntervalTimer);
+            }).bind(this)();
+        }.bind(this);
         this.flushBySignals.forEach((signal) => {
             process.on(signal, () => {
                 (async() => {

@@ -6,21 +6,13 @@ import * as stackTraceParser from 'stacktrace-parser';
 import { LoggerConfigInterface, TargetConfigInterface } from './Interface/LoggerConfigInterface';
 
 export class Dispatcher implements LoggerConfigInterface {
-    // eslint-disable-next-line no-undef
-    public flushBySignals: NodeJS.Signals[] = [];
-
-    public flushByCountInterval = 1000;
-
-    public flushByTimeInterval = 0;
+    public flushInterval = 1000;
 
     public traceLevel = 0;
 
     public targets: TargetConfigInterface[] = [];
 
     private messages: MessageEntity[] = [];
-
-    // eslint-disable-next-line no-undef
-    private flushByTimeIntervalTimer: NodeJS.Timer | null = null;
 
     public constructor(config: LoggerConfigInterface) {
         this.configure(config);
@@ -34,37 +26,8 @@ export class Dispatcher implements LoggerConfigInterface {
     }
 
     public init(): void {
-        // @ts-ignore
-        process.flushLogs = function() {
-            (async() => {
-                const msgToFlush = this.messages;
-                this.messages = [];
-                await this.flush(msgToFlush, true);
-                clearInterval(this.flushByTimeIntervalTimer);
-            }).bind(this)();
-        }.bind(this);
-        this.flushBySignals.forEach((signal) => {
-            process.on(signal, () => {
-                (async() => {
-                    const msgToFlush = this.messages;
-                    this.messages = [];
-                    await this.flush(msgToFlush, true);
-                })();
-            });
-        });
-        if (this.flushByTimeInterval > 0) {
-            this.flushByTimeIntervalTimer = setInterval(() => {
-                (async() => {
-                    if (this.messages.length !== 0) {
-                        const msgToFlush = this.messages;
-                        this.messages = [];
-                        return await this.flush(msgToFlush);
-                    }
-                })();
-            }, this.flushByTimeInterval);
-        }
-        process.on('exit', () => {
-            clearInterval(this.flushByTimeIntervalTimer);
+        process.on('exit', async () => {
+            await this.flush(this.messages, true);
         });
     }
 
@@ -73,13 +36,10 @@ export class Dispatcher implements LoggerConfigInterface {
         const traces: StackFrame[] = [];
         if (this.traceLevel > 0) {
             let count = 0;
-            // @ts-ignore
-            const trace = stackTraceParser.parse(new Error().stack ?? []);
+            const trace = stackTraceParser.parse(new Error().stack);
             trace.pop();
-            // eslint-disable-next-line array-callback-return
-            trace.forEach((item: StackFrame) => {
+            trace.map((item: StackFrame) => {
                 if (count++ >= this.traceLevel) {
-                    // eslint-disable-next-line array-callback-return
                     return;
                 }
                 traces.push(item);
@@ -96,10 +56,9 @@ export class Dispatcher implements LoggerConfigInterface {
             memoryUsage: process.memoryUsage().heapUsed
         });
 
-        if (this.flushByCountInterval > 0 && this.messages.length >= this.flushByCountInterval) {
-            const flushMsg = this.messages;
+        if (this.flushInterval > 0 && this.messages.length >= this.flushInterval) {
+            this.flush(this.messages);
             this.messages = [];
-            this.flush(flushMsg);
         }
     }
 
@@ -108,25 +67,22 @@ export class Dispatcher implements LoggerConfigInterface {
 
         const targets = this.targets.map((target: AbstractTarget) => {
             if (target.enabled) {
-                return target.collect(messages, final);
-                // TODO add try catch
-                // try {
-                //
-                // } catch (exception) {
-                //     targetErrors.push({
-                //         level: LogLevel.WARNING,
-                //         time: new Date(),
-                //         data: [exception.name, exception.message, exception.stack],
-                //         message: 'Unable to send log via ' + target.constructor.name,
-                //         category: 'logger.core',
-                //         memoryUsage: process.memoryUsage().heapUsed,
-                //         trace: stackTraceParser.parse(new Error().stack),
-                //     });
-                // }
+                try {
+                    return target.collect(messages, final);
+                } catch (exception) {
+                    targetErrors.push({
+                        level: LogLevel.WARNING,
+                        time: new Date(),
+                        data: [exception.name, exception.message, exception.stack],
+                        message: 'Unable to send log via ' + target.constructor.name,
+                        category: 'logger.core',
+                        memoryUsage: process.memoryUsage().heapUsed,
+                        trace: stackTraceParser.parse(new Error().stack)
+                    });
+                }
             }
-            return Promise.resolve();
         });
-        await Promise.all(targets).catch(async() => {
+        await Promise.all(targets).catch(async () => {
             await this.flush(targetErrors, true);
         });
     }

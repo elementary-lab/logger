@@ -5,11 +5,10 @@ import { TargetConfigInterface } from '../Interface/LoggerConfigInterface';
 export abstract class AbstractTarget implements TargetConfigInterface {
     public enabled = true;
     public levels: LogLevel[] = [];
-    public categories: string[] = [];
-    public except: string[] = [];
-    public prefix: string = '';
+    public exclude: string[] = [];
+    public include: string[] = [];
     public exportInterval = 1;
-    public messages: MessageEntity[] = [];
+    public messages: MessageEntity[] | null;
 
     abstract export(): Promise<void>;
 
@@ -20,7 +19,7 @@ export abstract class AbstractTarget implements TargetConfigInterface {
     }
 
     public async collect(messages: MessageEntity[], final = false): Promise<void> {
-        this.messages = this.filterMessages(messages, this.levels, this.categories, this.except);
+        this.messages = this.filterMessages(messages, this.levels, this.include, this.exclude);
         if (
             this.messages.length > 0 &&
             (final || (this.exportInterval > 0 && this.messages.length >= this.exportInterval))
@@ -28,29 +27,20 @@ export abstract class AbstractTarget implements TargetConfigInterface {
             // set exportInterval to 0 to avoid triggering export again while exporting
             const oldExportInterval = this.exportInterval;
             this.exportInterval = 0;
-            const result = await this.export();
+            await this.export();
             this.exportInterval = oldExportInterval;
-            return result;
         }
-        return Promise.resolve();
     }
 
     public filterMessages(
         messages: MessageEntity[],
         levels: LogLevel[] = [],
-        categories: string[] = [],
-        except: string[] = []
+        include: string[] = [],
+        exclude: string[] = []
     ): MessageEntity[] {
         // TODO filter
         return messages.filter((value: MessageEntity) => {
             return levels.includes(value.level);
         });
-    }
-
-    protected getTime(date: Date): string {
-        return date
-            .toISOString()
-            .replace(/T/, ' ')
-            .replace(/Z/, '');
     }
 }

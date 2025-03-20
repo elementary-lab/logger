@@ -4,15 +4,12 @@ import * as Sentry from '@sentry/node';
 import { StackFrame } from 'stacktrace-parser';
 import { Stacktrace } from '@sentry/node';
 import { TargetConfigInterface } from '../Interface/LoggerConfigInterface';
-import { Primitive } from '@sentry/types/dist/misc';
-import { Transport, TransportClass } from '@sentry/types/types/transport';
-import { HTTPSTransport } from '@sentry/node/dist/transports/https';
+import { Primitive } from '@sentry/core/build/types/types-hoist/misc';
 
 export class SentryTarget extends AbstractTarget implements SentryTargetConfig {
     public dsn: string;
     public environment: string;
     public release: string;
-    public transport: TransportClass<Transport> = HTTPSTransport;
 
     public constructor(config: SentryTargetConfig) {
         super();
@@ -21,9 +18,7 @@ export class SentryTarget extends AbstractTarget implements SentryTargetConfig {
             dsn: this.dsn,
             release: this.release,
             environment: this.environment,
-            attachStacktrace: true,
-            debug: true,
-            transport: this.transport
+            attachStacktrace: true
         });
     }
 
@@ -35,14 +30,16 @@ export class SentryTarget extends AbstractTarget implements SentryTargetConfig {
             } else {
                 eventId = Sentry.captureEvent({
                     message: item.message,
-                    stacktrace: this.convertTrace(item.trace),
+                    extra: {
+                        stacktrace: this.convertTrace(item.trace)
+                    },
                     tags: item.data
                 });
             }
             console.log('Add new event to Sentry pool: ' + eventId);
         });
-        const sendResult = await Sentry.flush(5000);
-        console.log('Send data to sentry: ' + sendResult);
+        const sendResult = await Sentry.flush();
+        console.log('Send data to sentry' + sendResult);
     }
 
     private convertTrace(trace: StackFrame[]): Stacktrace {
@@ -50,12 +47,11 @@ export class SentryTarget extends AbstractTarget implements SentryTargetConfig {
             frames: [],
             frames_omitted: [1, 2]
         };
-        trace.forEach((item: StackFrame) => {
+        trace.map((item: StackFrame) => {
             newTrace.frames.push({
-                // eslint-disable-next-line @typescript-eslint/camelcase
-                abs_path: item.file ?? 'null',
-                lineno: item.lineNumber ?? 0,
-                colno: item.column ?? 0,
+                abs_path: item.file,
+                lineno: item.lineNumber,
+                colno: item.column,
                 vars: item.arguments
             });
         });
@@ -67,7 +63,6 @@ interface SentryTargetConfig extends TargetConfigInterface {
     dsn: string;
     environment: string;
     release: string;
-    transport?: TransportClass<Transport>
     tags?: {
         [key: string]: Primitive;
     };

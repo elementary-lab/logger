@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "resolveJsonModule": true,
     "alwaysStrict": false,
     "declaration": true,
     "declarationMap": true,
@@ -33,7 +34,7 @@
     "strictBindCallApply": false,
     "target": "ES2017",
     "esModuleInterop": true,
-    "module": "commonjs",
+    "module": "NodeNext"
 
   },
   "ts-node": {

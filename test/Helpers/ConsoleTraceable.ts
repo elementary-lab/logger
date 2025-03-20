@@ -1,9 +1,12 @@
 import { InspectOptions } from 'util';
-
+export interface ConsoleTraceableEvent {
+    eventType: string;
+    data: any;
+}
 export class ConsoleTraceable implements Console {
-    private events: any[] = [];
+    private events: ConsoleTraceableEvent[] = [];
 
-    public getEvents(): Event[] {
+    public getEvents(): ConsoleTraceableEvent[] {
         return this.events;
     }
 
@@ -11,8 +14,12 @@ export class ConsoleTraceable implements Console {
 
     public assert(value: any, message?: string, ...optionalParams: any[]): void {
         this.events.push({
-            eventType: 'clear',
-            data: {}
+            eventType: 'assert',
+            data: {
+                value,
+                message,
+                optionalParams
+            }
         });
     }
 
@@ -26,7 +33,7 @@ export class ConsoleTraceable implements Console {
     public count(label?: string): void {
         this.events.push({
             eventType: 'count',
-            data: {}
+            data: { label }
         });
     }
 
@@ -60,6 +67,10 @@ export class ConsoleTraceable implements Console {
     }
 
     public dirxml(...data: any[]): void {
+        this.events.push({
+            eventType: 'dir',
+            data
+        });
     }
 
     public error(message?: any, ...optionalParams: any[]): void {

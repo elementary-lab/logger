@@ -2,21 +2,21 @@
 
 export enum LogLevel {
     PROFILE = 0,
-    DEBUG = 1,
-    INFO = 2,
-    NOTICE = 3,
-    WARNING = 4,
-    ERROR = 5,
-    EMERGENCY = 6,
+    TRACE = 1,
+    DEBUG = 2,
+    INFO = 3,
+    NOTICE = 4,
+    WARNING = 5,
+    ERROR = 6,
+    EMERGENCY = 7
 }
 
 export enum LogLevelString {
     'profile',
+    'trace',
     'debug',
     'info',
     'notice',
-    'warning',
-    'error',
-    'emergency',
+    'warn',
+    'error'
 }
-

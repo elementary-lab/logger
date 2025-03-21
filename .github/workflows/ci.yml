@@ -26,8 +26,6 @@ jobs:
 
       - name: Run tests with coverage
         run: npm run test -- --coverage
-        # Предполагается, что в package.json у вас определён скрипт test, например:
-        # "test": "jest"
 
       - name: Upload coverage report to Codecov
         uses: codecov/codecov-action@v3

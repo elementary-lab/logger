@@ -1,5 +1,5 @@
 import { Dispatcher } from '../Dispatcher';
-import { LoggerInterface } from '@elementary-lab/standards/dist/LoggerInterface';
+import { LoggerInterface } from '@elementary-lab/standards/src/LoggerInterface';
 import { LogLevel } from '../Types';
 
 export class CategoryExtension implements LoggerInterface {

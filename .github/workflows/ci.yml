@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests with coverage
+        run: npm run test -- --coverage
+        # Предполагается, что в package.json у вас определён скрипт test, например:
+        # "test": "jest"
+
+      - name: Upload coverage report to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}  # Укажите токен Codecov в Secrets
+          files: ./coverage/lcov.info
+          flags: unittests
+          name: codecov-report

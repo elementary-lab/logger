@@ -1,6 +1,6 @@
-import { Dispatcher } from 'src/Dispatcher';
+import { Dispatcher } from '../Dispatcher';
 import { LoggerInterface } from '@elementary-lab/standards/dist/LoggerInterface';
-import { LogLevel } from 'src/Types';
+import { LogLevel } from '../Types';
 
 export class CategoryExtension implements LoggerInterface {
     public constructor(private dispatcher: Dispatcher, private categoryName: string) {}

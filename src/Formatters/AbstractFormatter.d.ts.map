@@ -1,0 +1,1 @@
+{"version":3,"file":"AbstractFormatter.d.ts","sourceRoot":"","sources":["AbstractFormatter.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,aAAa,EAAE,MAAM,2BAA2B,CAAC;AAE1D,8BAAsB,iBAAiB;aACnB,MAAM,CAAC,IAAI,EAAE,aAAa,GAAG,MAAM;IAEnD,SAAS,CAAC,OAAO,CAAC,IAAI,EAAE,IAAI,GAAG,MAAM;IAOrC,SAAS,CAAC,mBAAmB,IAAI,GAAG;CAYvC"}

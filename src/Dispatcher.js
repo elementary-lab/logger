@@ -1,50 +1,37 @@
-import { LogLevel } from './Types';
-import { MessageEntity, MessageTag } from './Entities/MessageEntity';
-import { AbstractTarget } from './Targets/AbstractTarget';
-import { StackFrame } from 'stacktrace-parser';
-import * as stackTraceParser from 'stacktrace-parser';
-import { LoggerConfigInterface, TargetConfigInterface } from './Interface/LoggerConfigInterface';
-import * as console from 'node:console';
-
-export class Dispatcher implements LoggerConfigInterface {
-    // eslint-disable-next-line no-undef
-    public flushBySignals: NodeJS.Signals[] = [];
-
-    public flushByCountInterval = 1000;
-
-    public flushByTimeInterval = 0;
-
-    public traceLevel = 0;
-
-    public targets: TargetConfigInterface[] = [];
-
-    private messages: MessageEntity[] = [];
-
-    // eslint-disable-next-line no-undef
-    private flushByTimeIntervalTimer: NodeJS.Timer | null = null;
-
-    public constructor(config: LoggerConfigInterface) {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Dispatcher = void 0;
+const tslib_1 = require("tslib");
+const stackTraceParser = tslib_1.__importStar(require("stacktrace-parser"));
+class Dispatcher {
+    constructor(config) {
+        // eslint-disable-next-line no-undef
+        this.flushBySignals = [];
+        this.flushByCountInterval = 1000;
+        this.flushByTimeInterval = 0;
+        this.traceLevel = 0;
+        this.targets = [];
+        this.messages = [];
+        // eslint-disable-next-line no-undef
+        this.flushByTimeIntervalTimer = null;
         this.configure(config);
         this.init();
     }
-
-    public configure(config: LoggerConfigInterface): void {
+    configure(config) {
         Object.keys(config).forEach(value => {
             this[value] = config[value];
         });
     }
-
-    public init(): void {
+    init() {
         // @ts-ignore
-        process.flushLogs = async function() {
+        process.flushLogs = async function () {
             const msgToFlush = this.messages;
             this.messages = [];
             await this.flush(msgToFlush, true);
         }.bind(this);
-
         this.flushBySignals.forEach((signal) => {
             process.on(signal, () => {
-                (async() => {
+                (async () => {
                     const msgToFlush = this.messages;
                     this.messages = [];
                     await this.flush(msgToFlush, true);
@@ -53,7 +40,7 @@ export class Dispatcher implements LoggerConfigInterface {
         });
         if (this.flushByTimeInterval > 0) {
             this.flushByTimeIntervalTimer = setInterval(() => {
-                (async() => {
+                (async () => {
                     if (this.messages.length !== 0) {
                         const msgToFlush = this.messages;
                         this.messages = [];
@@ -66,15 +53,14 @@ export class Dispatcher implements LoggerConfigInterface {
             clearInterval(this.flushByTimeIntervalTimer);
         });
     }
-
-    public log(message: string, level: LogLevel, data?: any, category = 'application', tags?: MessageTag[]): void {
+    log(message, level, data, category = 'application', tags) {
         const time = new Date();
-        const traces: StackFrame[] = [];
+        const traces = [];
         if (this.traceLevel > 0) {
             let count = 0;
             const trace = stackTraceParser.parse(new Error().stack);
             trace.pop();
-            trace.map((item: StackFrame) => {
+            trace.map((item) => {
                 if (count++ >= this.traceLevel) {
                     return;
                 }
@@ -91,17 +77,14 @@ export class Dispatcher implements LoggerConfigInterface {
             trace: traces,
             memoryUsage: process.memoryUsage().heapUsed
         });
-
         if (this.flushByCountInterval > 0 && this.messages.length >= this.flushByCountInterval) {
             this.flush(this.messages);
             this.messages = [];
         }
     }
-
-    public async flush(messages: MessageEntity[], final = false): Promise<void> {
-        const targetErrors: MessageEntity[] = [];
-
-        const targets = this.targets.map((target: AbstractTarget) => {
+    async flush(messages, final = false) {
+        const targetErrors = [];
+        const targets = this.targets.map((target) => {
             if (target.enabled) {
                 return target.collect(messages, final);
                 // try {
@@ -120,8 +103,10 @@ export class Dispatcher implements LoggerConfigInterface {
             }
             return Promise.resolve();
         });
-        await Promise.all(targets).catch(async() => {
+        await Promise.all(targets).catch(async () => {
             await this.flush(targetErrors, true);
         });
     }
 }
+exports.Dispatcher = Dispatcher;
+//# sourceMappingURL=Dispatcher.js.map

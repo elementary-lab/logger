@@ -7,10 +7,11 @@ import { ConsoleTraceable } from '../Helpers/ConsoleTraceable';
 
 describe('Logger console test', () => {
     let logger: Logger;
-    const consoleOutput = new ConsoleTraceable();
+    let consoleOutput: ConsoleTraceable;
     beforeEach(() => {
+        consoleOutput = new ConsoleTraceable();
         logger = new Logger({
-            flushInterval: 1,
+            flushByCountInterval: 1,
             traceLevel: 0,
             targets: [
                 new ConsoleTarget(
@@ -33,12 +34,12 @@ describe('Logger console test', () => {
         expect(result[0].data.message).toContain('someAdditionalData');
     });
     it('Log with category', () => {
-        logger.withCategory('pluginCategory').info('testMessage', ['someAdditionalData']);
+        logger.withCategory('pluginCategory').info('testMessageWithCategory', ['someAdditionalDataWithCategory']);
         const result = consoleOutput.getEvents();
         expect(result.length).toEqual(1);
         expect(result[0].data.message).toContain('pluginCategory');
         expect(result[0].data.message).toContain('info');
-        expect(result[0].data.message).toContain('testMessage');
-        expect(result[0].data.message).toContain('someAdditionalData');
+        expect(result[0].data.message).toContain('testMessageWithCategory');
+        expect(result[0].data.message).toContain('someAdditionalDataWithCategory');
     });
 });

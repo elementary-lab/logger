@@ -34,7 +34,7 @@
     "strictBindCallApply": false,
     "target": "ES2017",
     "esModuleInterop": true,
-    "module": "NodeNext"
+    "module": "ES6"
 
   },
   "ts-node": {

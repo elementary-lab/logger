@@ -1,0 +1,1 @@
+{"version":3,"file":"JsonFormatter.d.ts","sourceRoot":"","sources":["JsonFormatter.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,iBAAiB,EAAE,MAAM,qBAAqB,CAAC;AAExD,OAAO,EAAE,aAAa,EAAE,MAAM,2BAA2B,CAAC;AAE1D,qBAAa,aAAc,SAAQ,iBAAiB;IACzC,MAAM,CAAC,IAAI,EAAE,aAAa,GAAG,MAAM;CAY7C"}

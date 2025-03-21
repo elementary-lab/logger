@@ -1,1 +1,1 @@
-# logger
+# Elementary Lab Logger extension

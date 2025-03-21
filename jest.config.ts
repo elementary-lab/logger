@@ -11,12 +11,10 @@ const config: Config = {
             { tsconfig: 'tsconfig.json' }   // путь к вашему tsconfig для тестов
         ]
     },
-    // Если тесты лежат в src, указываем эту директорию
-    roots: ['<rootDir>/src', '<rootDir>/test'], // добавляем test, если там лежат тесты
-    moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'], // расширения модулей
-    moduleDirectories: ['node_modules', 'src'],  // где искать модули
+    roots: ['<rootDir>/src', '<rootDir>/test'],
+    moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+    moduleDirectories: ['node_modules', 'src'],
 
-    // Маппинг алиасов из tsconfig.json
     moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths || {}, { prefix: '<rootDir>/' }),
     testMatch: [
         "**/__tests__/**/*.[jt]s?(x)",

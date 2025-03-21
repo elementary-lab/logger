@@ -1,6 +1,5 @@
 {
   "name": "@elementary-lab/logger",
-  "version": "2.0.6",
   "scripts": {
     "build": "run-p build:cjs build:types",
     "build:cjs": "tsc -p tsconfig.cjs.json",
@@ -20,18 +19,13 @@
     "fix:prettier": "prettier --write \"{src,test,scripts}/**/*.ts\"",
     "lint": "run-s lint:prettier lint:eslint",
     "lint:eslint": "eslint . --cache --cache-location '../../eslintcache/' --format stylish",
-    "lint:prettier": "prettier --check \"{src,test,scripts}/**/*.ts\""
+    "lint:prettier": "prettier --check \"{src,test,scripts}/**/*.ts\"",
+    "test": "jest"
   },
   "author": "Andru Cherny",
   "license": "ISC",
   "publishConfig": {
     "access": "public"
-  },
-
-  "files": ["dist/*"],
-  "type": "module",
-  "exports": {
-    ".": "./dist/*"
   },
   "dependencies": {
     "@elementary-lab/standards": "^2.0.3",

@@ -18,5 +18,6 @@ export enum LogLevelString {
     'info',
     'notice',
     'warn',
-    'error'
+    'error',
+    'emergency'
 }

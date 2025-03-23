@@ -9,6 +9,7 @@ export class JsonFormatter extends AbstractFormatter {
                 date: this.getTime(item.time),
                 level: LogLevelString[item.level],
                 category: item.category,
+                text: item.message,
                 userData: JSON.stringify(item.data, this.getCircularReplacer())
             },
             null,

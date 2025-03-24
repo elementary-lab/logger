@@ -42,4 +42,18 @@ describe('Logger console test', () => {
         expect(result[0].data.message).toContain('testMessageWithCategory');
         expect(result[0].data.message).toContain('someAdditionalDataWithCategory');
     });
+    it('Log with exception', () => {
+        try {
+            throw new Error('ThrowException')
+        } catch (e) {
+            logger.withCategory('pluginCategory').info('ErrorInCode', e);
+        }
+        const result = consoleOutput.getEvents();
+        expect(result.length).toEqual(1);
+        expect(result[0].data.message).toContain('pluginCategory');
+        expect(result[0].data.message).toContain('info');
+        expect(result[0].data.message).toContain('ErrorInCode');
+        expect(result[0].data.message).toContain('ThrowException');
+    });
+
 });

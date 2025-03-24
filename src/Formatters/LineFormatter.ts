@@ -18,8 +18,8 @@ export class LineFormatter extends AbstractFormatter {
             return string;
         }
 
-        if (Array.isArray(item.data)) {
-            string = string.replace('{userData}', JSON.stringify(item.data, this.getCircularReplacer()));
+        if (Array.isArray(item.data) || typeof item.data === 'object') {
+            string = string.replace('{userData}', JSON.stringify(this.normalizer.normalize(item.data), this.getCircularReplacer()));
         } else {
             string = string.replace('{userData}', '[' + JSON.stringify(item.data, this.getCircularReplacer()) + ']');
         }

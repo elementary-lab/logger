@@ -1,6 +1,15 @@
 import { MessageEntity } from '../Entities/MessageEntity';
+import { NormalizerFormatter } from '../Formatters/NormalizerFormatter';
 
 export abstract class AbstractFormatter {
+
+    public constructor(
+        protected readonly normalizer?: NormalizerFormatter
+    ) {
+        if(!normalizer) {
+            this.normalizer = new NormalizerFormatter();
+        }
+    }
     public abstract format(item: MessageEntity): string;
 
     protected getTime(date: Date): string {

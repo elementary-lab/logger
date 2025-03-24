@@ -38,9 +38,38 @@ export abstract class AbstractTarget implements TargetConfigInterface {
         include: string[] = [],
         exclude: string[] = []
     ): MessageEntity[] {
-        // TODO filter
+        const toRegExp = (pattern: string): RegExp => {
+            // We screen all special symbols, except *, then replace * by. *
+            const escaped = pattern.replace(/[-[\]/{}()+?.\\^$|]/g, '\\$&');
+            const regexStr = '^' + escaped.replace(/\*/g, '.*') + '$';
+            return new RegExp(regexStr);
+        };
+
+        const includePatterns = include.map(toRegExp);
+        const excludePatterns = exclude.map(toRegExp);
+
         return messages.filter((value: MessageEntity) => {
-            return levels.includes(value.level);
+            // The filter by levels
+            if (levels.length > 0 && !levels.includes(value.level)) {
+                return false;
+            }
+
+            const category = value.category;
+
+            // Include verification: if at least one coincidence, then we miss (and do not check Exclude)
+            if (includePatterns.length > 0) {
+                return includePatterns.some((pattern) => pattern.test(category));
+            }
+
+            // Exclude verification: if there is at least one coincidence, then we exclude
+            if (excludePatterns.length > 0) {
+                const matchedExclude = excludePatterns.some((pattern) => pattern.test(category));
+                if (matchedExclude) {
+                    return false;
+                }
+            }
+
+            return true;
         });
     }
 }

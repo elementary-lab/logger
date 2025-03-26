@@ -51,12 +51,13 @@ export class CategoryExtension implements LoggerInterface {
         if (!category) {
             category = this.categoryName;
         }
+        this.dispatcher.log(message, LogLevel.TRACE, context, category);
     }
 
     public warn(message: string, context?: any, category?: string): void {
         if (!category) {
             category = this.categoryName;
         }
-        this.dispatcher.log(message, LogLevel.TRACE, context, category);
+        this.dispatcher.log(message, LogLevel.WARNING, context, category);
     }
 }
